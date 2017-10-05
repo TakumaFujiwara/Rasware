@@ -15,10 +15,10 @@ void blink(void) {
 int main(void) {
     // Initialization code can go here
     CallEvery(blink, 0, 0.5);
-
+    
     while (1) {
         // Runtime code can go here
         Printf("Hello World!\n");
-
+        
     }
 }
