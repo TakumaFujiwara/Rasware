@@ -13,7 +13,7 @@ void blink(void) {
     blink_on = !blink_on;
 }
 
-void clockwisemode(void){
+void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
   if(distvalcw<=0.35)
   {
     SetMotor(left, 1.0);
@@ -50,7 +50,7 @@ void clockwisemode(void){
     SetMotor(right, -1.0);
   }
 }
-void counterclockwisemode(void){
+void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
   if(distvalccw<=0.35)
   {
     SetMotor(left, 0.55);
@@ -100,6 +100,8 @@ int main(void) {
     tADC *dist2 = InitializeADC(PIN_B1);
     float distvalccw;
     while (1) {
+      /*tADC *dist2 = InitializeADC(PIN_B1);
+      float distval2;
         // Runtime code can go here
         //SetMotor(left, 1.0);
         //SetMotor(right, -1.0);
@@ -113,16 +115,13 @@ int main(void) {
         if(0.55>=distvalcw>=0.45)
         {
           //CallEvery(blink, 0, 1.5); //determine if robot is in right spot??
-          clockwisemode();
+          clockwisemode(left,right,distvalcw);
         }
         else if(0.55>=distvalccw>=0.45)
         {
-          counterclockwisemode();
+          counterclockwisemode(left,right,distvalccw);
         }
-        else
-        {
-          return;
-        }
+
         /*if(0.8>distval>0.5)
         {SetMotor(left, 1.0);
         SetMotor(right, -0.8);}
