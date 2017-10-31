@@ -92,33 +92,32 @@ void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
     SetMotor(right, 1.0);
   }
 }
-void linesensormode()
+//void linesensormode(){}
 // The 'main' function is the entry point of the program
-int main(void) {
+int main(void){
     // Initialization code can go here
     CallEvery(blink, 0, 0.5);
-    tMotor *left = InitializeServoMotor(PIN_D0, true);
-    tMotor *right = InitializeServoMotor(PIN_D1, false);
-    tLineSensor *line = InitializeGPIOLineSensor(PIN_A2, PIN_A3, PIN_A4, PIN_B6, PIN_B7, PIN_E1, PIN_E2, PIN_E3);
-    float linevals[8];
+    //tMotor *left = InitializeServoMotor(PIN_D0, true);
+    //tMotor *right = InitializeServoMotor(PIN_D1, false);
+
     tADC *dist = InitializeADC(PIN_B4);
     float distvalcw;
     tADC *dist2 = InitializeADC(PIN_B1);
     float distvalccw;
+    Printf("hi");
+    tLineSensor *line = InitializeGPIOLineSensor(PIN_E1, PIN_A2, PIN_A3, PIN_A4, PIN_B6, PIN_B7, PIN_E3, PIN_E2);
+    float linevals[8];
     while (1) {
-      tADC *dist2 = InitializeADC(PIN_B1);
-      float distval2;
         // Runtime code can go here
         //SetMotor(left, 1.0);
         //SetMotor(right, -1.0);
         LineSensorReadArray(line, linevals);
-        Printf(“%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t”, value[0], value[1], value[2],
-          value[3], value[4], value[5], value[6], value[7]);
+        Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
         distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
         distvalccw = ADCRead(dist2);
         //Printf("IR sensor value is %f\n", distvalccw);
-        if()
+
         /*if(1.0>=distvalcw>=0.0)
         {while (1){
           distvalcw = ADCRead(dist);
