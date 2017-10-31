@@ -17,7 +17,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
   if(distvalcw<=0.30)
   {
     SetMotor(left, -0.55);
-    SetMotor(right, -0.15);
+    SetMotor(right, -0.25);
   }
   else if(0.30<distvalcw<=0.35)
   {
@@ -41,7 +41,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
   }
   else if(distvalcw>=0.50)
   {
-    SetMotor(left, -0.15);
+    SetMotor(left, -0.25);
     SetMotor(right, -0.55);
   }
   else if(0.45>distvalcw>0.35)
@@ -92,40 +92,40 @@ void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
     SetMotor(right, 1.0);
   }
 }
+void linesensormode()
 // The 'main' function is the entry point of the program
 int main(void) {
     // Initialization code can go here
     CallEvery(blink, 0, 0.5);
     tMotor *left = InitializeServoMotor(PIN_D0, true);
     tMotor *right = InitializeServoMotor(PIN_D1, false);
-    /*tLineSensor *line = InitializeGPIOLineSensor(PIN_D0, PIN_D1, PIN_D2, PIN_D3, PIN_D4, PIN_E1, PIN_E2, PIN_E1);
-    float linevals[8];*/
+    tLineSensor *line = InitializeGPIOLineSensor(PIN_A2, PIN_A3, PIN_A4, PIN_B6, PIN_B7, PIN_E1, PIN_E2, PIN_E3);
+    float linevals[8];
     tADC *dist = InitializeADC(PIN_B4);
     float distvalcw;
     tADC *dist2 = InitializeADC(PIN_B1);
     float distvalccw;
     while (1) {
-      /*tADC *dist2 = InitializeADC(PIN_B1);
+      tADC *dist2 = InitializeADC(PIN_B1);
       float distval2;
         // Runtime code can go here
         //SetMotor(left, 1.0);
         //SetMotor(right, -1.0);
-        /*LineSensorReadArray(line, linevals);
+        LineSensorReadArray(line, linevals);
         Printf(“%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t”, value[0], value[1], value[2],
-          value[3], value[4], value[5], value[6], value[7]);*/
+          value[3], value[4], value[5], value[6], value[7]);
         distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
         distvalccw = ADCRead(dist2);
         //Printf("IR sensor value is %f\n", distvalccw);
-        SetMotor(left, 0.10);
-        SetMotor(right, -0.10);
-        if(1.0>=distvalcw>=0.0)
+        if()
+        /*if(1.0>=distvalcw>=0.0)
         {while (1){
           distvalcw = ADCRead(dist);
           Printf("IR sensor value is %f\n", distvalcw);
           CallEvery(blink, 0, 2.5); //determine if robot is in right spot??
           clockwisemode(left,right,distvalcw);}
-        }
+        }*/
         /*else if(0.55>=distvalccw>=0.45)
         {while(1)
           {counterclockwisemode(left,right,distvalccw);}
