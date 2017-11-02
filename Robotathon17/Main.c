@@ -13,6 +13,49 @@ void blink(void) {
     blink_on = !blink_on;
 }
 
+void linefollow(tMotor *left, tMotor *right, float linevals[8]){
+  if ((linevals[4]<1) && (linevals[2]<1))
+  {
+    SetMotor(left, -0.10);
+    SetMotor(right, -0.10);
+  }
+
+  else if((linevals[4]<1) && (linevals[2]>1))
+  {
+    SetMotor(left, 0.20);
+    SetMotor(right, -0.10);
+  }
+
+  else if((linevals[4]>1) &&(linevals[2]<1))
+  {
+    SetMotor(left, -0.10);
+    SetMotor(right, 0.20);
+  }
+
+/*
+//for all 3 seeing black or all 3 seeing white
+else if((linevals[4]>1) && (linevals[3]>1) &&(linevals[2]>1))
+  {
+    SetMotor(left, -0.15);
+    SetMotor(right, 0);
+  }
+  else if((linevals[4]<1) && (linevals[3]<1) &&(linevals[2]<1))
+  {
+    SetMotor(left, 0);
+    SetMotor(right, -0.15);
+  }
+
+*/
+
+  else
+  {
+    SetMotor(left, -0.1);
+    SetMotor(right, -0.1);
+  }
+}
+
+
+
 void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
   if(distvalcw<=0.30)
   {
@@ -97,17 +140,18 @@ void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
 int main(void){
     // Initialization code can go here
     CallEvery(blink, 0, 0.5);
-    //tMotor *left = InitializeServoMotor(PIN_D0, true);
-    //tMotor *right = InitializeServoMotor(PIN_D1, false);
+    tMotor *left = InitializeServoMotor(PIN_D0, true);
+    tMotor *right = InitializeServoMotor(PIN_D1, false);
 
     tADC *dist = InitializeADC(PIN_B4);
     float distvalcw;
     tADC *dist2 = InitializeADC(PIN_B1);
     float distvalccw;
     Printf("hi");
-    tLineSensor *line = InitializeGPIOLineSensor(PIN_E1, PIN_A2, PIN_A3, PIN_A4, PIN_B6, PIN_B7, PIN_E3, PIN_E2);
+    tLineSensor *line = InitializeGPIOLineSensor(PIN_E1, PIN_A2, PIN_A3, PIN_A4, PIN_C5, PIN_B3, PIN_E3, PIN_E2);
     float linevals[8];
     while (1) {
+
         // Runtime code can go here
         //SetMotor(left, 1.0);
         //SetMotor(right, -1.0);
@@ -116,6 +160,7 @@ int main(void){
         distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
         distvalccw = ADCRead(dist2);
+        linefollow(left, right, linevals);
         //Printf("IR sensor value is %f\n", distvalccw);
 
         /*if(1.0>=distvalcw>=0.0)
