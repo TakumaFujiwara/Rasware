@@ -12,24 +12,51 @@ void blink(void) {
     SetPin(PIN_F3, blink_on);
     blink_on = !blink_on;
 }
-
-void linefollow(tMotor *left, tMotor *right, float linevals[8]){
-  if ((linevals[4]<1) && (linevals[2]<1))
+float linefollowfindavg(float lintervals[8])
+{
+  float val[8] = {-3,-2,-1,0,0,1,2,3};
+  float trig[8];
+  float mult[8];
+  float value;
+  float avg;
+  for(int i=0; i<8;i++)
   {
-    SetMotor(left, -0.10);
-    SetMotor(right, -0.10);
+    if(0.4<lintervals[i]<1)
+     trig[i]=1;
+     else
+     trig[i]=0;
+  }
+  for(int i=0;i<8;i++)
+  {
+    mult[i]=trig[i]*val[i];
+    value+=mult[i];
+  }
+  avg=value/8;
+  return avg;
+}
+void linefollow(tMotor *left, tMotor *right, float avg){
+
+  if (-0.25<avg<0.25)
+  {
+    SetMotor(left, -0.70);
+    SetMotor(right, -0.70);
   }
 
-  else if((linevals[4]<1) && (linevals[2]>1))
+  else if(avg<=-3)
   {
-    SetMotor(left, 0.20);
-    SetMotor(right, -0.10);
+    SetMotor(left, -0.4);
+    SetMotor(right, -1);
   }
 
-  else if((linevals[4]>1) &&(linevals[2]<1))
+  else if(avg>=3)
   {
-    SetMotor(left, -0.10);
-    SetMotor(right, 0.20);
+    SetMotor(left, -1);
+    SetMotor(right, -0.40);
+  }
+  else
+  {
+    SetMotor(left, -0.70-avg*.1);
+    SetMotor(right, -0.70+avg*.1);
   }
 
 /*
@@ -47,11 +74,6 @@ else if((linevals[4]>1) && (linevals[3]>1) &&(linevals[2]>1))
 
 */
 
-  else
-  {
-    SetMotor(left, -0.1);
-    SetMotor(right, -0.1);
-  }
 }
 
 
@@ -67,7 +89,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
     SetMotor(left, -0.55);
     SetMotor(right, -0.45);
   }
-  /*else if(0.4<distvalcw<=0.45)
+  /*else if(0.4<distvalcw<=0.45)1
   {
     SetMotor(left, 1.0);
     SetMotor(right, -0.85);
@@ -150,6 +172,9 @@ int main(void){
     Printf("hi");
     tLineSensor *line = InitializeGPIOLineSensor(PIN_E1, PIN_A2, PIN_A3, PIN_A4, PIN_C5, PIN_B3, PIN_E3, PIN_E2);
     float linevals[8];
+    float avgs[10];
+    int counter=0;
+    float avga;
     while (1) {
 
         // Runtime code can go here
@@ -160,7 +185,19 @@ int main(void){
         distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
         distvalccw = ADCRead(dist2);
-        linefollow(left, right, linevals);
+        float avg=linefollowfindavg(linevals);
+        avgs[counter]=avg;
+        counter++;
+        if (counter>=10)
+         counter=0;
+        avga=0;
+        for(int i=0;i<10;i++)
+        {
+          avga+=avgs[i];
+        }
+        avga=avga/10;
+        linefollow(left,right,avga);
+
         //Printf("IR sensor value is %f\n", distvalccw);
 
         /*if(1.0>=distvalcw>=0.0)
