@@ -14,7 +14,7 @@ void blink(void) {
 }
 float linefollowfindavg(float lintervals[8])
 {
-  float val[8] = {-3,-2,-1,0,0,1,2,3};
+  float val[8] = {-3,-2,-1,-0.5,0.5,1,2,3};
   float trig[8];
   float mult[8];
   float value;
@@ -165,12 +165,12 @@ int main(void){
     tMotor *left = InitializeServoMotor(PIN_D0, true);
     tMotor *right = InitializeServoMotor(PIN_D1, false);
 
-    tADC *dist = InitializeADC(PIN_B4);
+    /*tADC *dist = InitializeADC(PIN_B4);
     float distvalcw;
     tADC *dist2 = InitializeADC(PIN_B1);
-    float distvalccw;
+    float distvalccw;*/
     Printf("hi");
-    tLineSensor *line = InitializeGPIOLineSensor(PIN_E1, PIN_A2, PIN_A3, PIN_A4, PIN_C5, PIN_B3, PIN_E3, PIN_E2);
+    tLineSensor *line = InitializeGPIOLineSensor(PIN_B0, PIN_B1, PIN_E4, PIN_E5, PIN_B4, PIN_A5, PIN_A6, PIN_A7);
     float linevals[8];
     float avgs[10];
     int counter=0;
@@ -182,9 +182,9 @@ int main(void){
         //SetMotor(right, -1.0);
         LineSensorReadArray(line, linevals);
         Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
-        distvalcw = ADCRead(dist);
+        //distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
-        distvalccw = ADCRead(dist2);
+        //distvalccw = ADCRead(dist2);
         float avg=linefollowfindavg(linevals);
         avgs[counter]=avg;
         counter++;
