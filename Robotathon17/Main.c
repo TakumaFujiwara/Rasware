@@ -14,7 +14,7 @@ void blink(void) {
 }
 float linefollowfindavg(float lintervals[8])
 {
-  float val[8] = {-3,-2,-1,-0.5,0.5,1,2,3};
+  float val[8] = {-4,-3,-2,-1,1,2,3,4};
   float trig[8];
   float mult[8];
   float value;
@@ -31,32 +31,32 @@ float linefollowfindavg(float lintervals[8])
     mult[i]=trig[i]*val[i];
     value+=mult[i];
   }
-  avg=value/8;
+  avg=value;
   return avg;
 }
 void linefollow(tMotor *left, tMotor *right, float avg){
 
-  if (-0.25<avg<0.25)
+  if (-0.05<avg<0.05)
   {
-    SetMotor(left, -0.70);
-    SetMotor(right, -0.70);
+    SetMotor(left, -0.25);
+    SetMotor(right, -0.25);
   }
 
-  else if(avg<=-3)
+  else if(avg<=-4)
   {
-    SetMotor(left, -0.4);
-    SetMotor(right, -1);
+    SetMotor(left, -0.02);
+    SetMotor(right, -0.5);
   }
 
-  else if(avg>=3)
+  else if(avg>=4)
   {
-    SetMotor(left, -1);
-    SetMotor(right, -0.40);
+    SetMotor(left, -.5);
+    SetMotor(right, -0.02);
   }
   else
   {
-    SetMotor(left, -0.70-avg*.1);
-    SetMotor(right, -0.70+avg*.1);
+    SetMotor(left, -0.25-avg*.125);
+    SetMotor(right, -0.25+avg*.125);
   }
 
 /*
@@ -172,7 +172,7 @@ int main(void){
     Printf("hi");
     tLineSensor *line = InitializeGPIOLineSensor(PIN_B0, PIN_B1, PIN_E4, PIN_E5, PIN_B4, PIN_A5, PIN_A6, PIN_A7);
     float linevals[8];
-    float avgs[10];
+    float avgs[5];
     int counter=0;
     float avga;
     while (1) {
@@ -188,15 +188,15 @@ int main(void){
         float avg=linefollowfindavg(linevals);
         avgs[counter]=avg;
         counter++;
-        if (counter>=10)
+        if (counter>=5)
          counter=0;
         avga=0;
-        for(int i=0;i<10;i++)
+        for(int i=0;i<5;i++)
         {
           avga+=avgs[i];
         }
-        avga=avga/10;
-        linefollow(left,right,avga);
+        avga=avga/5;
+        linefollow(left,right,avg);
 
         //Printf("IR sensor value is %f\n", distvalccw);
 
