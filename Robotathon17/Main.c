@@ -35,29 +35,38 @@ float linefollowfindavg(float lintervals[8])
   return avg;
 }
 void linefollow(tMotor *left, tMotor *right, float avg){
-
-  if (-0.05<avg<0.05)
+Printf("%f",avg);
+  if (-0.05<avg&& avg<0.05)
   {
     SetMotor(left, -0.25);
     SetMotor(right, -0.25);
+    Printf("left -.25\t");
+    Printf("right -.25\t");
   }
 
   else if(avg<=-4)
   {
     SetMotor(left, -0.02);
     SetMotor(right, -0.5);
+    Printf("left -.02\t");
+    Printf("right -.5\t");
   }
 
   else if(avg>=4)
   {
     SetMotor(left, -.5);
     SetMotor(right, -0.02);
+    Printf("left -.02\t");
+    Printf("right -.5\t");
   }
   else
   {
     SetMotor(left, -0.25-avg*.125);
     SetMotor(right, -0.25+avg*.125);
+    Printf("left %f\t",-0.25-avg*.125);
+    Printf("right %f\t",-0.25+avg*.125);
   }
+//Printf("%f",avg);
 
 /*
 //for all 3 seeing black or all 3 seeing white
@@ -181,7 +190,7 @@ int main(void){
         //SetMotor(left, 1.0);
         //SetMotor(right, -1.0);
         LineSensorReadArray(line, linevals);
-        Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
+        //Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
         //distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
         //distvalccw = ADCRead(dist2);
