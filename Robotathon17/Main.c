@@ -167,7 +167,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
   {
     SetMotor(left, 0.1);
     SetMotor(right, -0.1);
-  }
+  } 
 }
 void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
   if(distvalccw<=0.35)
