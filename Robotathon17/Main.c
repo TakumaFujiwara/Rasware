@@ -14,14 +14,14 @@ void blink(void) {
 }
 float linefollowfindavg(float lintervals[8])
 {
-  float val[8] = {-5,-3.5,-1.8,-.7,.7,1.8,3.5,5};
+  float val[8] = {-4.3,-3.2,-1.8,-.7,.7,1.8,3.2,4.3};
   float trig[8];
   float mult[8];
   float value;
   float avg;
   for(int i=0; i<8;i++)
   {
-    if(0.1<lintervals[i])
+    if(1<lintervals[i])
      trig[i]=1;
      else
      trig[i]=0;
@@ -36,36 +36,76 @@ float linefollowfindavg(float lintervals[8])
 }
 void linefollow(tMotor *left, tMotor *right, float avg){
 Printf("%f",avg);
+float leftMotorVal=0;
+float rightMotorVal=0;
   if (-.5<avg&&avg<.5)
   {
-    SetMotor(left, -0.25);
-    SetMotor(right, -0.25);
+    leftMotorVal=-1;
+    rightMotorVal=-1;
     //Printf("left -.25\t");
     //Printf("right -.25\t");
   }
 
-  else if(avg<=-5)
-  {
-    SetMotor(left, -.5);
-    SetMotor(right, 0.5);
-    //Printf("left -.02\t");
-    //Printf("right -.5\t");
-  }
-
-  else if(avg>=5)
-  {
-    SetMotor(left, 0.5);
-    SetMotor(right, -.5);
-    //Printf("left -.02\t");
-    //Printf("right -.5\t");
-  }
+  // else if(avg<=-5)
+  // {
+  //   leftMotorVal =-.5;
+  //   rightMotorVal =0.5;
+  //   //Printf("left -.02\t");
+  //   //Printf("right -.5\t");
+  // }
+  //
+  // else if(avg>=5)
+  // {
+  //   leftMotorVal=0.5;
+  //     rightMotorVal=-.5;
+  //   //Printf("left -.02\t");
+  //   //Printf("right -.5\t");
+  // }
   else
   {
-    SetMotor(left, -0.15+avg*.07);
-    SetMotor(right, -0.15-avg*.07);
+    leftMotorVal = -0.3+avg*.08;
+    rightMotorVal = -0.3-avg*.08;
+    // if(avg<-4){
+    //   leftMotorVal=-0.38+(-4)*.08;
+    //   rightMotorVal=-0.38-(-4)*.08;
+    // }
+    // else if(avg>4){
+    //   leftMotorVal=-0.38+4*.08;
+    //   rightMotorVal=-0.38-4*.08;
+    // }
+
+
+
+    if(leftMotorVal<-0.5){
+      leftMotorVal=-.5;
+    }
+    else if(leftMotorVal>.2){
+      leftMotorVal=.2;
+    }
+    if(rightMotorVal<-.5){
+      rightMotorVal=-.5;
+    }
+    else if (rightMotorVal>.2){
+      rightMotorVal=.2;
+    }
+
+
+  //  leftMotorVal= -0.38+avg*.1;
+  //  rightMotorVal=0.38-avg*.1;
     //Printf("left %f\t",-0.25-avg*.125);
     //Printf("right %f\t",-0.25+avg*.125);
   }
+  // if(leftMotorVal<-0.6)
+  // leftMotorVal=-.6;
+  // else if(leftMotorVal>.6)
+  // leftMotorVal=.6;
+  // if(rightMotorVal<-.6)
+  // rightMotorVal=-.6;
+  // else if (rightMotorVal>.6)
+  // rightMotorVal=.6;
+
+  SetMotor(left,leftMotorVal);
+  SetMotor(right,rightMotorVal);
 //Printf("%f",avg);
 
 /*
@@ -93,7 +133,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
     SetMotor(left, -0.55);
     SetMotor(right, -0.25);
   }
-  else if(0.30<distvalcw<=0.35)
+  else if(0.30<distvalcw && distvalcw<=0.35)
   {
     SetMotor(left, -0.55);
     SetMotor(right, -0.45);
@@ -108,7 +148,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
     SetMotor(left, -0.85);
     SetMotor(right, 1.0);
   }*/
-  else if(0.50>distvalcw>=0.45)
+  else if(0.50>distvalcw && distvalcw>=0.45)
   {
     SetMotor(left, -0.45);
     SetMotor(right, -0.55);
@@ -118,7 +158,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
     SetMotor(left, -0.25);
     SetMotor(right, -0.55);
   }
-  else if(0.45>distvalcw>0.35)
+  else if(0.45>distvalcw && distvalcw>0.35)
   {
     SetMotor(left, -0.55);
     SetMotor(right, -0.55);
@@ -135,22 +175,22 @@ void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
     SetMotor(left, -0.55);
     SetMotor(right, 1.0);
   }
-  else if(0.35<distvalccw<=0.4)
+  else if(0.35<distvalccw && distvalccw<=0.4)
   {
     SetMotor(left, -0.75);
     SetMotor(right, 1.0);
   }
-  else if(0.4<distvalccw<=0.45)
+  else if(0.4<distvalccw && distvalccw<=0.45)
   {
     SetMotor(left, -0.85);
     SetMotor(right, 1.0);
   }
-  else if(0.6>distvalccw>=0.55)
+  else if(0.6>distvalccw && distvalccw>=0.55)
   {
     SetMotor(left, 1.0);
     SetMotor(right, -0.85);
   }
-  else if(0.65>distvalccw>=0.6)
+  else if(0.65>distvalccw && distvalccw>=0.6)
   {
     SetMotor(left, 1.0);
     SetMotor(right, -0.75);
