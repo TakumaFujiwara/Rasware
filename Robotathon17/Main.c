@@ -12,6 +12,21 @@ void blink(void) {
     SetPin(PIN_F3, blink_on);
     blink_on = !blink_on;
 }
+float linefollowfindravg(float linevals[8])
+{
+  float val[8]={-4,-3,-2,-1,1,2,3,4};
+  float mult[8];
+  float value;
+  float avg;
+  for(int i=0;i<8;i++)
+  {if(linevals[i]>1)
+    linevals[i]=1;
+    mult[i]=linevals[i]*val[i];
+    value+=mult[i];
+  }
+  avg=value;
+  return avg;
+}
 float linefollowfindavg(float lintervals[8])
 {
   float val[8] = {-4.3,-3.2,-1.8,-.7,.7,1.8,3.2,4.3};
@@ -63,8 +78,15 @@ float rightMotorVal=0;
   // }
   else
   {
-    leftMotorVal = -0.3+avg*.08;
-    rightMotorVal = -0.3-avg*.08;
+
+    // float absAvg = avg;
+    // if(avg <0){
+    //   avg = avg*-1;
+    // }
+    // float baseSpeed = -.5 +(absAvg*(.3/4.5));
+    leftMotorVal = -.3+avg*.07;
+    rightMotorVal = -.3-avg*.07;
+
     // if(avg<-4){
     //   leftMotorVal=-0.38+(-4)*.08;
     //   rightMotorVal=-0.38-(-4)*.08;
@@ -95,14 +117,7 @@ float rightMotorVal=0;
     //Printf("left %f\t",-0.25-avg*.125);
     //Printf("right %f\t",-0.25+avg*.125);
   }
-  // if(leftMotorVal<-0.6)
-  // leftMotorVal=-.6;
-  // else if(leftMotorVal>.6)
-  // leftMotorVal=.6;
-  // if(rightMotorVal<-.6)
-  // rightMotorVal=-.6;
-  // else if (rightMotorVal>.6)
-  // rightMotorVal=.6;
+
 
   SetMotor(left,leftMotorVal);
   SetMotor(right,rightMotorVal);
@@ -124,7 +139,27 @@ else if((linevals[4]>1) && (linevals[3]>1) &&(linevals[2]>1))
 */
 
 }
-
+float linerfollow(tMotor *left, tMotor *right, float avg,float pravg){
+  //return what it needs to go back to
+  if(avg-pravg>0.1)
+  {
+    SetMotor(left,-0.5+.1*(avg-pravg));
+    SetMotor(right,-0.5-.1*(avg-pravg));
+    return pravg;
+  }
+  else if(avg-pravg<-0.1)
+  {
+    SetMotor(left,-0.5+.1*(avg-pravg));
+    SetMotor(right,-0.5-.1*(avg-pravg));
+    return pravg;
+  }
+  else
+  {
+    SetMotor(left,-0.5);
+    SetMotor(right,-0.5);
+    return avg;
+  }
+}
 
 
 void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
@@ -167,7 +202,7 @@ void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
   {
     SetMotor(left, 0.1);
     SetMotor(right, -0.1);
-  } 
+  }
 }
 void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
   if(distvalccw<=0.35)
@@ -222,19 +257,26 @@ int main(void){
     tLineSensor *line = InitializeGPIOLineSensor(PIN_B0, PIN_B1, PIN_E4, PIN_E5, PIN_B4, PIN_A5, PIN_A6, PIN_A7);
     float linevals[8];
     float avgs[5];
+    float tavg=100;
     int counter=0;
     float avga;
+    float cavg;
     while (1) {
 
         // Runtime code can go here
         //SetMotor(left, 1.0);
         //SetMotor(right, -1.0);
         LineSensorReadArray(line, linevals);
-        Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
+        //Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
         //distvalcw = ADCRead(dist);
         //Printf("IR sensor value is %f\n", distvalcw);
         //distvalccw = ADCRead(dist2);
+        float ravg=linefollowfindravg(linevals);//ravg gets real value of line sensors with multiplier
         float avg=linefollowfindavg(linevals);
+        if(tavg>=100)
+         tavg=ravg;
+        //tavg=previous input
+        //ravg=this input
         avgs[counter]=avg;
         counter++;
         if (counter>=5)
@@ -245,9 +287,10 @@ int main(void){
           avga+=avgs[i];
         }
         avga=avga/5;
-        Printf("%f ",avga);
-        linefollow(left,right,avga);
-
+        Printf("%f\t%f\t%f\n",ravg,tavg,ravg-tavg);
+      //  linefollow(left,right,avga);
+        float change=linerfollow(left,right,ravg,tavg,cavg);
+        tavg=change;
         //Printf("IR sensor value is %f\n", distvalccw);
 
         /*if(1.0>=distvalcw>=0.0)
