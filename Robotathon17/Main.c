@@ -125,7 +125,12 @@ float rightMotorVal=0;
 
 }
 void linerfollow(tMotor *left, tMotor *right, float prop,float derivative,float integral){
-  float output=1*prop+1*derivative+1*integral;
+  float output=.40*prop+10*derivative;//.000005*integral;
+  Printf("%f\t%f\t%f\t%f\n",prop,derivative,integral,.075*prop+.015*derivative+.005*integral);
+  if(output>.5)
+  output=.5;
+  else if (output<-.5)
+  output=-.5;
   SetMotor(left,-0.5+output);
   SetMotor(right,-0.5-output);
   /*if(cavg==0&&avg-inital>0.1)
@@ -247,11 +252,12 @@ int main(void){
     float tavg=100;
     int counter=0;
     float avga;
-    float cavg;
+
     float initval;
     float error;
     float errorp;
     float integ;
+    float deriv;
     while (1) {
 
         // Runtime code can go here
@@ -263,14 +269,14 @@ int main(void){
         //Printf("IR sensor value is %f\n", distvalcw);
         //distvalccw = ADCRead(dist2);
         float ravg=linefollowfindravg(linevals);//ravg gets real value of line sensors with multiplier
-        float avg=linefollowfindavg(linevals);
+        //float avg=linefollowfindavg(linevals);
         if(tavg>=100)
          {tavg=ravg;
            initval=ravg;
          }
         //tavg=previous input
         //ravg=this input
-        avgs[counter]=avg;
+        /*avgs[counter]=avg;
         counter++;
         if (counter>=5)
          counter=0;
@@ -280,12 +286,13 @@ int main(void){
           avga+=avgs[i];
         }
         avga=avga/5;
-        Printf("%f\t%f\t%f\n",ravg,tavg,cavg,initval);
+*/
       //  linefollow(left,right,avga);
       error=ravg-initval;
       integ=integ+error;
-      float deriv=error-errorp;
+      deriv=error-errorp;
         linerfollow(left,right,error,deriv,integ);
+
         tavg=ravg;
         errorp=error;
         //Printf("IR sensor value is %f\n", distvalccw);
