@@ -130,14 +130,14 @@ void linerfollow(tMotor *left, tMotor *right, float prop,float derivative,float 
   SetMotor(right,-0.5-output);
   /*if(cavg==0&&avg-inital>0.1)
   {
-    SetMotor(left,-0.5+.1*(avg-pravg));
-    SetMotor(right,-0.5-.1*(avg-pravg));
+    SetMotor(left,-0.57+.1*(avg-pravg));
+    SetMotor(right,-0.57-.1*(avg-pravg));
     return pravg;
   }
   else if(cavg==0 &&avg-initial<-0.1)
   {
-    SetMotor(left,-0.5+.1*(avg-pravg));
-    SetMotor(right,-0.5-.1*(avg-pravg));
+    SetMotor(left,-0.57+.1*(avg-pravg));
+    SetMotor(right,-0.57-.1*(avg-pravg));
     return pravg;
   }
   else
