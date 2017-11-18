@@ -12,6 +12,14 @@ void blink(void) {
     SetPin(PIN_F3, blink_on);
     blink_on = !blink_on;
 }
+void blinky(void) {
+    SetPin(PIN_F1, blink_on);
+    blink_on = !blink_on;
+}
+void blinkys(void) {
+    SetPin(PIN_F2, blink_on);
+    blink_on = !blink_on;
+}
 float linefollowfindravg(float linevals[8])
 {
   float val[8]={-4,-3,-2,-1,1,2,3,4};
@@ -125,14 +133,14 @@ float rightMotorVal=0;
 
 }
 void linerfollow(tMotor *left, tMotor *right, float prop,float derivative,float integral){
-  float output=.40*prop+10*derivative;//.000005*integral;
+  float output=.085*prop+1.2*derivative;//.000005*integral;
   Printf("%f\t%f\t%f\t%f\n",prop,derivative,integral,.075*prop+.015*derivative+.005*integral);
-  if(output>.5)
-  output=.5;
-  else if (output<-.5)
-  output=-.5;
-  SetMotor(left,-0.5+output);
-  SetMotor(right,-0.5-output);
+  if(output>.65)
+  output=.65;
+  else if (output<-.65)
+  output=-.65;
+  SetMotor(left,-0.35+output*.95);
+  SetMotor(right,-0.35-output*.95);
   /*if(cavg==0&&avg-inital>0.1)
   {
     SetMotor(left,-0.57+.1*(avg-pravg));
@@ -155,48 +163,29 @@ void linerfollow(tMotor *left, tMotor *right, float prop,float derivative,float 
 
 
 void clockwisemode(tMotor *left, tMotor *right, float distvalcw){
+if(distvalcw>0.7)
+distvalcw=0.7;
+else if(distvalcw<-0.7)
+distvalcw=-0.7;
+  SetMotor(right,-0.3+distvalcw);
+  SetMotor(left,-0.3-distvalcw);
+}
+
+void counterclockwisemode(tMotor *left, tMotor *right, float distvalcw){
   if(distvalcw<=0.30)
   {
-    SetMotor(left, -0.55);
     SetMotor(right, -0.25);
-  }
-  else if(0.30<distvalcw && distvalcw<=0.35)
-  {
     SetMotor(left, -0.55);
-    SetMotor(right, -0.45);
   }
-  /*else if(0.4<distvalcw<=0.45)1
-  {
-    SetMotor(left, 1.0);
-    SetMotor(right, -0.85);
-  }
-  else if(0.6>distvalcw>=0.55)
-  {
-    SetMotor(left, -0.85);
-    SetMotor(right, 1.0);
-  }*/
-  else if(0.50>distvalcw && distvalcw>=0.45)
-  {
-    SetMotor(left, -0.45);
-    SetMotor(right, -0.55);
-  }
-  else if(distvalcw>=0.50)
-  {
-    SetMotor(left, -0.25);
-    SetMotor(right, -0.55);
-  }
-  else if(0.45>distvalcw && distvalcw>0.35)
-  {
-    SetMotor(left, -0.55);
-    SetMotor(right, -0.55);
-  }
+
   else
   {
-    SetMotor(left, 0.1);
-    SetMotor(right, -0.1);
+    SetMotor(right, 0.1);
+    SetMotor(left, -0.1);
   }
 }
-void counterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
+
+void testcounterclockwisemode(tMotor *left, tMotor *right, float distvalccw){
   if(distvalccw<=0.35)
   {
     SetMotor(left, -0.55);
@@ -241,14 +230,16 @@ int main(void){
     tMotor *left = InitializeServoMotor(PIN_D0, true);
     tMotor *right = InitializeServoMotor(PIN_D1, false);
 
-    /*tADC *dist = InitializeADC(PIN_B4);
+    tADC *dist = InitializeADC(PIN_D2);
     float distvalcw;
-    tADC *dist2 = InitializeADC(PIN_B1);
-    float distvalccw;*/
+    tADC *dist2 = InitializeADC(PIN_E1);
+    float distvalccw;
+    distvalcw = ADCRead(dist);
+    //Printf("IR sensor value is %f\n", distvalcw);
+    distvalccw = ADCRead(dist2);
     //Printf("hi");
     tLineSensor *line = InitializeGPIOLineSensor(PIN_B0, PIN_B1, PIN_E4, PIN_E5, PIN_B4, PIN_A5, PIN_A6, PIN_A7);
     float linevals[8];
-    float avgs[5];
     float tavg=100;
     int counter=0;
     float avga;
@@ -258,6 +249,23 @@ int main(void){
     float errorp;
     float integ;
     float deriv;
+
+    int clockwisem;
+    float goalw=0.6;
+    float werror;
+    float werrorp;
+    float integw;
+    float derivw;
+    float output;
+    if(distvalcw>distvalccw)
+    { CallEvery(blinky, 0, 0.5);
+      //determine if robot is in right spot??
+      clockwisem=1;
+    }
+    else
+    {CallEvery(blinkys, 0, 0.5);
+      clockwisem=0;
+    }
     while (1) {
 
         // Runtime code can go here
@@ -265,9 +273,10 @@ int main(void){
         //SetMotor(right, -1.0);
         LineSensorReadArray(line, linevals);
         //Printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n", linevals[0], linevals[1], linevals[2], linevals[3], linevals[4], linevals[5], linevals[6], linevals[7]);
-        //distvalcw = ADCRead(dist);
-        //Printf("IR sensor value is %f\n", distvalcw);
-        //distvalccw = ADCRead(dist2);
+        distvalcw = ADCRead(dist);
+
+        distvalccw = ADCRead(dist2);
+        Printf("%f\t%f,\n", distvalcw,distvalccw);
         float ravg=linefollowfindravg(linevals);//ravg gets real value of line sensors with multiplier
         //float avg=linefollowfindavg(linevals);
         if(tavg>=100)
@@ -297,18 +306,18 @@ int main(void){
         errorp=error;
         //Printf("IR sensor value is %f\n", distvalccw);
 
-        /*if(1.0>=distvalcw>=0.0)
-        {while (1){
-          distvalcw = ADCRead(dist);
-          Printf("IR sensor value is %f\n", distvalcw);
-          CallEvery(blink, 0, 2.5); //determine if robot is in right spot??
-          clockwisemode(left,right,distvalcw);}
-        }*/
-        /*else if(0.55>=distvalccw>=0.45)
-        {while(1)
-          {counterclockwisemode(left,right,distvalccw);}
-        }*/
-
+        if(clockwisem==1)
+        {   werror=distvalcw-goalw;
+          integw=integw+error;
+          derivw=werrorp-werror;
+          werrorp=werror;
+          output=1.0*werror+1.8*derivw;
+          //clockwisemode(left,right,output);
+        }
+        else
+        {
+          //  counterclockwisemode(left,right,distvalccw);
+        }
         /*if(0.8>distval>0.5)
         {SetMotor(left, 1.0);
         SetMotor(right, -0.8);}
