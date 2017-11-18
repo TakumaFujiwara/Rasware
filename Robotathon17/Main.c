@@ -4,7 +4,7 @@
 #include <RASLib/inc/motor.h>
 #include <RASLib/inc/linesensor.h>
 #include <RASLib/inc/adc.h>
-
+#include <unistd.h>
 // Blink the LED to show we're on
 tBoolean blink_on = true;
 
@@ -123,31 +123,18 @@ float rightMotorVal=0;
   SetMotor(right,rightMotorVal);
 //Printf("%f",avg);
 
-/*
-//for all 3 seeing black or all 3 seeing white
-else if((linevals[4]>1) && (linevals[3]>1) &&(linevals[2]>1))
-  {
-    SetMotor(left, -0.15);
-    SetMotor(right, 0);
-  }
-  else if((linevals[4]<1) && (linevals[3]<1) &&(linevals[2]<1))
-  {
-    SetMotor(left, 0);
-    SetMotor(right, -0.15);
-  }
-
-*/
-
 }
-float linerfollow(tMotor *left, tMotor *right, float avg,float pravg){
-  //return what it needs to go back to
-  if(avg-pravg>0.1)
+void linerfollow(tMotor *left, tMotor *right, float prop,float derivative,float integral){
+  float output=1*prop+1*derivative+1*integral;
+  SetMotor(left,-0.5+output);
+  SetMotor(right,-0.5-output);
+  /*if(cavg==0&&avg-inital>0.1)
   {
     SetMotor(left,-0.5+.1*(avg-pravg));
     SetMotor(right,-0.5-.1*(avg-pravg));
     return pravg;
   }
-  else if(avg-pravg<-0.1)
+  else if(cavg==0 &&avg-initial<-0.1)
   {
     SetMotor(left,-0.5+.1*(avg-pravg));
     SetMotor(right,-0.5-.1*(avg-pravg));
@@ -157,8 +144,8 @@ float linerfollow(tMotor *left, tMotor *right, float avg,float pravg){
   {
     SetMotor(left,-0.5);
     SetMotor(right,-0.5);
-    return avg;
-  }
+    return 0;
+  }*/
 }
 
 
@@ -261,6 +248,10 @@ int main(void){
     int counter=0;
     float avga;
     float cavg;
+    float initval;
+    float error;
+    float errorp;
+    float integ;
     while (1) {
 
         // Runtime code can go here
@@ -274,7 +265,9 @@ int main(void){
         float ravg=linefollowfindravg(linevals);//ravg gets real value of line sensors with multiplier
         float avg=linefollowfindavg(linevals);
         if(tavg>=100)
-         tavg=ravg;
+         {tavg=ravg;
+           initval=ravg;
+         }
         //tavg=previous input
         //ravg=this input
         avgs[counter]=avg;
@@ -287,10 +280,14 @@ int main(void){
           avga+=avgs[i];
         }
         avga=avga/5;
-        Printf("%f\t%f\t%f\n",ravg,tavg,ravg-tavg);
+        Printf("%f\t%f\t%f\n",ravg,tavg,cavg,initval);
       //  linefollow(left,right,avga);
-        float change=linerfollow(left,right,ravg,tavg,cavg);
-        tavg=change;
+      error=ravg-initval;
+      integ=integ+error;
+      float deriv=error-errorp;
+        linerfollow(left,right,error,deriv,integ);
+        tavg=ravg;
+        errorp=error;
         //Printf("IR sensor value is %f\n", distvalccw);
 
         /*if(1.0>=distvalcw>=0.0)
