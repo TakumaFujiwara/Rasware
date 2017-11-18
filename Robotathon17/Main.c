@@ -143,20 +143,20 @@ float linerfollow(tMotor *left, tMotor *right, float avg,float pravg){
   //return what it needs to go back to
   if(avg-pravg>0.1)
   {
-    SetMotor(left,-0.5+.1*(avg-pravg));
-    SetMotor(right,-0.5-.1*(avg-pravg));
+    SetMotor(left,-0.57+.1*(avg-pravg));
+    SetMotor(right,-0.57-.1*(avg-pravg));
     return pravg;
   }
   else if(avg-pravg<-0.1)
   {
-    SetMotor(left,-0.5+.1*(avg-pravg));
-    SetMotor(right,-0.5-.1*(avg-pravg));
+    SetMotor(left,-0.57+.1*(avg-pravg));
+    SetMotor(right,-0.57-.1*(avg-pravg));
     return pravg;
   }
   else
   {
-    SetMotor(left,-0.5);
-    SetMotor(right,-0.5);
+    SetMotor(left,-0.57);
+    SetMotor(right,-0.57);
     return avg;
   }
 }
@@ -289,7 +289,7 @@ int main(void){
         avga=avga/5;
         Printf("%f\t%f\t%f\n",ravg,tavg,ravg-tavg);
       //  linefollow(left,right,avga);
-        float change=linerfollow(left,right,ravg,tavg,cavg);
+        float change=linerfollow(left,right,ravg,tavg);
         tavg=change;
         //Printf("IR sensor value is %f\n", distvalccw);
 
